@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import ReactPaginate from "react-paginate";
 // import axios from "axios";
@@ -13,7 +13,7 @@ import { fetchMovies } from "../../services/movieService";
 
 import css from "./App.module.css";
 
-// import toast, { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function App() {
   const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
@@ -34,9 +34,15 @@ export default function App() {
   };
   const totalPages = data?.total_pages ?? 0;
 
+  useEffect(() => {
+    if (isSuccess && data?.results.length === 0) {
+      toast.error("No movies found for your request.");
+    }
+  }, [isSuccess, data]);
+
   return (
     <>
-      {/* <Toaster position="top-center" reverseOrder={false} />; */}
+      <Toaster position="top-center" reverseOrder={false} />;
       <SearchBar onSubmit={handleSubmit} />;{isLoading && <Loader />}
       {isSuccess && totalPages > 1 && (
         <ReactPaginate
